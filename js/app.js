@@ -119,7 +119,9 @@ function makeThemFly() {
 
     // For each stored Fireflies in the flies array, draw and fly them.
     for (let i = 0; i <= flies.length; i++){
-        flies[i].fly();
+        if (flies[i] !== undefined){
+            flies[i].fly();
+        }
     }
 }
 
