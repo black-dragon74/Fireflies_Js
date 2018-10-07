@@ -15,6 +15,19 @@ let ctx = canvas.getContext("2d");
 // Set fireflies colors, as an array
 let colors = ["yellow", "teal", "fuchsia", "green"];
 
+// Firefly default instance configuration
+let config = {
+    "x": 411,
+    "y": 67,
+    "dx": 0.04024953982157116,
+    "dy": 0.16881382593361466,
+    "color": "red",
+
+    // User changable config
+    "num_flies": 100,
+    "max_radius": 5
+}
+
 // Create the background image
 let bg_img = new Image();
 bg_img.src = 'img/bg.jpg';
@@ -34,15 +47,7 @@ function randomInRange(min, max){
 
 // Parses the above declared colors array and returns a single random color
 function colorFromColors(colors){
-    let colorIndex;
-
-    // If colors[index] is undefined we will regenerate a new index. Nobody wants transparent fireflies
-    do {
-        colorIndex = colors[randomInRange(0, colors.length)];
-    }
-    while (colorIndex === undefined);
-
-    return colorIndex;
+    return colors[randomInRange(0, colors.length-1)]; // -1 to prevent undefined index in array
 }
 
 // Update canvas height and width on each window resize
@@ -54,12 +59,12 @@ $(window).on('resize', function () {
 // Define a function which draws and animates fireflies and stores them as an instance object
 function Fireflies(x, y, dx, dy, radius, color){
     // Setters to access args as objects, like: Fireflies.color will return the arg passed as color
-    this.x = x;
-    this.y = y;
-    this.dx = dx;
-    this.dy = dy;
-    this.radius = radius;
-    this.color = color;
+    this.x = x !== undefined ? x : config.x;
+    this.y = y !== undefined ? y : config.y;
+    this.dx = dx !== undefined ? dx : config.dx;
+    this.dy = dy !== undefined ? dy : config.dy;
+    this.radius = radius !== undefined ? radius : config.max_radius;
+    this.color = color !== undefined ? color : config.color;
     this.draw = function () {
         ctx.save(); // Else previous fireflies will be overridden
         ctx.beginPath(); // Here-th begins fly creation
@@ -97,19 +102,19 @@ let flies = [];
 // Create a function that populates the above array with Fireflies instances
 function prepareFlies(){
     flies = [];
-    //TODO: make flies number user configurable
-    for (let i = 1; i <= 100; i++){
+    for (let i = 1; i <= config.num_flies; i++){
         // This for loop creates a fly on the canvas every-time it runs
         // Let's define our flies, we'll make the values random as we don't want the flies to be overlapping
-        let fly_radius = randomInRange(1, 5); // TODO: Make radius user configurable
-        let fly_x = randomInRange(fly_radius, canvas.width);
-        let fly_y = randomInRange(fly_radius, canvas.height);
-        let fly_dx = Math.random() / 5; // Not rounding off as we want displacement to be slow
-        let fly_dy = Math.random() / 5; // Not rounding off as we want displacement to be slow
-        let fly_color = colorFromColors(colors);
+        let fly = new Fireflies(); // Create a new instance of the fireflies
+        fly.radius = randomInRange(1, config.max_radius);
+        fly.x = randomInRange(fly.radius, canvas.width);
+        fly.y = randomInRange(fly.radius, canvas.height);
+        fly.dx = Math.random() / 5; // Not rounding off as we want displacement to be slow
+        fly.dy = Math.random() / 5; // Not rounding off as we want displacement to be slow
+        fly.color = colorFromColors(colors);
 
         // Done with makeup and shit, store the fly in the array
-        flies.push(new Fireflies(fly_x, fly_y, fly_dx, fly_dy, fly_radius, fly_color));
+        flies.push(fly);
     }
 }
 
