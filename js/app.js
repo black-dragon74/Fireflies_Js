@@ -13,7 +13,7 @@ canvas.width = window.innerWidth;
 let ctx = canvas.getContext("2d");
 
 // Set fireflies colors, as an array
-let colors = ["yellow", "teal", "fuchsia", "green"];
+let colors = ["yellow", "teal", "fuchsia", "green", "grey", "skyblue"];
 
 // Firefly default instance configuration
 let config = {
@@ -25,7 +25,8 @@ let config = {
 
     // User changable config
     "num_flies": 100,
-    "max_radius": 5
+    "max_radius": 5,
+	"anim_speed": 0.4 // Can be configured between 0-5, decimal values are accepted
 }
 
 // Create the background image
@@ -101,6 +102,12 @@ let flies = [];
 
 // Create a function that populates the above array with Fireflies instances
 function prepareFlies(){
+	
+	// Handle invalid animation_speed
+	if (config.anim_speed > 5){
+		config.anim_speed = 5;
+	}
+	
     flies = [];
     for (let i = 1; i <= config.num_flies; i++){
         // This for loop creates a fly on the canvas every-time it runs
@@ -109,8 +116,8 @@ function prepareFlies(){
         fly.radius = randomInRange(1, config.max_radius);
         fly.x = randomInRange(fly.radius, canvas.width);
         fly.y = randomInRange(fly.radius, canvas.height);
-        fly.dx = Math.random() / 5; // Not rounding off as we want displacement to be slow
-        fly.dy = Math.random() / 5; // Not rounding off as we want displacement to be slow
+        fly.dx = config.anim_speed + Math.random() / 5; // Not rounding off as we want displacement to be slow
+        fly.dy = config.anim_speed + Math.random() / 5; // Not rounding off as we want displacement to be slow
         fly.color = colorFromColors(colors);
 
         // Done with makeup and shit, store the fly in the array
